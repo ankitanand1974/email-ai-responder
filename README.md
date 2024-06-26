@@ -24,39 +24,51 @@ Email AI Responder is an automated system that processes incoming emails from Gm
 ## Setup
 
 1. Clone the repository:
-git clone https://github.com/ankitanand1974/email-ai-responder.git
-cd email-ai-responder
+    ```sh
+    git clone https://github.com/ankitanand1974/email-ai-responder.git
+    cd email-ai-responder
+    ```
 
-3. Install dependencies:
-npm install
-   
-4. Set up environment variables:
-Create a `.env` file in the root directory and add the following:
-PORT=3000
-GMAIL_CLIENT_ID=your_gmail_client_id
-GMAIL_CLIENT_SECRET=your_gmail_client_secret
-GMAIL_REDIRECT_URI=http://localhost:3000/auth/gmail/callback
-OUTLOOK_CLIENT_ID=your_outlook_client_id
-OUTLOOK_CLIENT_SECRET=your_outlook_client_secret
-OUTLOOK_REDIRECT_URI=http://localhost:3000/auth/outlook/callback
-OPENAI_API_KEY=your_openai_api_key
-REDIS_HOST=localhost
-REDIS_PORT=6379
+2. Install dependencies:
+    ```sh
+    npm install
+    ```
 
-5. Start Redis server:
-redis-server
+3. Set up environment variables:
+    Create a `.env` file in the root directory and add the following:
+    ```env
+    PORT=3000
+    GMAIL_CLIENT_ID=your_gmail_client_id
+    GMAIL_CLIENT_SECRET=your_gmail_client_secret
+    GMAIL_REDIRECT_URI=http://localhost:3000/auth/gmail/callback
+    OUTLOOK_CLIENT_ID=your_outlook_client_id
+    OUTLOOK_CLIENT_SECRET=your_outlook_client_secret
+    OUTLOOK_REDIRECT_URI=http://localhost:3000/auth/outlook/callback
+    OPENAI_API_KEY=your_openai_api_key
+    REDIS_HOST=localhost
+    REDIS_PORT=6379
+    ```
 
-6. Compile TypeScript:
-npx tsc
+4. Start Redis server:
+    ```sh
+    redis-server
+    ```
 
-7. Start the application:
-npm start
+5. Compile TypeScript:
+    ```sh
+    npx tsc
+    ```
+
+6. Start the application:
+    ```sh
+    npm start
+    ```
 
 ## Usage
 
-1. Access the application at `http://localhost:3000`
-2. Authenticate with Gmail or Outlook
-3. The system will automatically process incoming emails and generate responses
+- Access the application at [http://localhost:3000](http://localhost:3000)
+- Authenticate with Gmail or Outlook
+- The system will automatically process incoming emails and generate responses
 
 ## Contributing
 
