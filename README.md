@@ -54,14 +54,9 @@ Email AI Responder is an automated system that processes incoming emails from Gm
     redis-server
     ```
 
-5. Compile TypeScript:
-    ```sh
-    npx tsc
-    ```
-
 6. Start the application:
     ```sh
-    npm start
+    npx ts-node src/index.ts
     ```
 
 ## Usage
