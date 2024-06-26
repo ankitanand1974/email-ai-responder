@@ -9,18 +9,18 @@ class OutlookService {
   constructor() {
     this.msalClient = new ConfidentialClientApplication({
       auth: {
-        clientId: config.outlook.clientId,
-        clientSecret: config.outlook.clientSecret,
+        clientId: config.outlook.clientId as string,
+        clientSecret: config.outlook.clientSecret as string,
         authority: 'https://login.microsoftonline.com/common',
       },
     });
   }
 
-  getAuthUrl(): string {
+  async getAuthUrl(): Promise<string> {
     const scopes = ['https://graph.microsoft.com/Mail.Read', 'https://graph.microsoft.com/Mail.Send'];
     return this.msalClient.getAuthCodeUrl({
       scopes: scopes,
-      redirectUri: config.outlook.redirectUri,
+      redirectUri: config.outlook.redirectUri as string,
     });
   }
 
@@ -28,16 +28,21 @@ class OutlookService {
     const result = await this.msalClient.acquireTokenByCode({
       code,
       scopes: ['https://graph.microsoft.com/Mail.Read', 'https://graph.microsoft.com/Mail.Send'],
-      redirectUri: config.outlook.redirectUri,
+      redirectUri: config.outlook.redirectUri as string,
     });
 
     return result.accessToken;
   }
 
   async getEmails(accessToken: string): Promise<any[]> {
-    const authProvider = new TokenCredentialAuthenticationProvider({
-      getToken: async () => accessToken,
-    });
+    const authProvider = new TokenCredentialAuthenticationProvider(
+      {
+        getToken: async () => accessToken,
+      },
+      {
+        scopes: ['https://graph.microsoft.com/.default']
+      }
+    );
 
     const graphClient = Client.initWithMiddleware({ authProvider });
 
@@ -52,9 +57,14 @@ class OutlookService {
   }
 
   async sendEmail(accessToken: string, to: string, subject: string, body: string): Promise<void> {
-    const authProvider = new TokenCredentialAuthenticationProvider({
-      getToken: async () => accessToken,
-    });
+    const authProvider = new TokenCredentialAuthenticationProvider(
+      {
+        getToken: async () => accessToken,
+      },
+      {
+        scopes: ['https://graph.microsoft.com/.default']
+      }
+    );
 
     const graphClient = Client.initWithMiddleware({ authProvider });
 

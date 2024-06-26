@@ -25,9 +25,14 @@ router.get('/gmail/callback', async (req, res) => {
   }
 });
 
-router.get('/outlook', (req, res) => {
-  const authUrl = outlookService.getAuthUrl();
-  res.redirect(authUrl);
+router.get('/outlook', async (req, res) => {
+  try {
+    const authUrl = await outlookService.getAuthUrl();
+    res.redirect(authUrl);
+  } catch (error) {
+    console.error('Error getting Outlook auth URL:', error);
+    res.status(500).json({ error: 'Failed to get authentication URL' });
+  }
 });
 
 router.get('/outlook/callback', async (req, res) => {
