@@ -13,16 +13,24 @@ interface Email {
 class EmailProcessor {
   async processEmails(accessToken: string, service: 'gmail' | 'outlook'): Promise<void> {
     let emails: Email[];
-
     if (service === 'gmail') {
       const gmailEmails = await gmailService.getEmails(accessToken);
-      emails = gmailEmails.map(email => ({
-        id: email.id,
-        from: email.payload.headers.find((header: any) => header.name === 'From').value,
-        subject: email.payload.headers.find((header: any) => header.name === 'Subject').value,
-        body: this.getEmailBody(email),
-        service: 'gmail'
-      }));
+      emails = gmailEmails.map(email => {
+        console.log('Processing email:', JSON.stringify(email, null, 2));
+        if (!email || !email.payload || !email.payload.headers) {
+          console.error('Unexpected email structure:', email);
+          return null;
+        }
+        const fromHeader = email.payload.headers.find((header: any) => header.name === 'From');
+        const subjectHeader = email.payload.headers.find((header: any) => header.name === 'Subject');
+        return {
+          id: email.id,
+          from: fromHeader ? fromHeader.value : 'Unknown',
+          subject: subjectHeader ? subjectHeader.value : 'No Subject',
+          body: this.getEmailBody(email),
+          service: 'gmail'
+        };
+      }).filter((email): email is Email => email !== null);
     } else {
       const outlookEmails = await outlookService.getEmails(accessToken);
       emails = outlookEmails.map(email => ({
@@ -35,7 +43,9 @@ class EmailProcessor {
     }
 
     for (const email of emails) {
-      await this.processEmail(accessToken, email);
+      if (email) {
+        await this.processEmail(accessToken, email);
+      }
     }
   }
 
@@ -53,8 +63,14 @@ class EmailProcessor {
   }
 
   private getEmailBody(email: any): string {
+    if (!email || !email.payload || !email.payload.parts) {
+      console.error('Invalid email structure for body extraction:', email);
+      return '';
+    }
     const body = email.payload.parts.find((part: any) => part.mimeType === 'text/plain');
-    return body ? Buffer.from(body.body.data, 'base64').toString() : '';
+    return body && body.body && body.body.data
+      ? Buffer.from(body.body.data, 'base64').toString()
+      : '';
   }
 }
 

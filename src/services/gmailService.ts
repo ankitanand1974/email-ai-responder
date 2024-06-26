@@ -35,24 +35,31 @@ class GmailService {
   async getEmails(accessToken: string): Promise<any[]> {
     this.oauth2Client.setCredentials({ access_token: accessToken });
     const gmail = google.gmail({ version: 'v1', auth: this.oauth2Client });
-
+  
     const response = await gmail.users.messages.list({
       userId: 'me',
       maxResults: 10,
     });
-
+  
+    console.log('Gmail API response:', JSON.stringify(response.data, null, 2));
+  
     const messages = response.data.messages || [];
     const emails = await Promise.all(
       messages.map(async (message) => {
-        const email = await gmail.users.messages.get({
-          userId: 'me',
-          id: message.id as string,
-        });
-        return email.data;
+        try {
+          const email = await gmail.users.messages.get({
+            userId: 'me',
+            id: message.id as string,
+          });
+          return email.data;
+        } catch (error) {
+          console.error('Error fetching email:', error);
+          return null;
+        }
       })
     );
-
-    return emails;
+  
+    return emails.filter(email => email !== null);
   }
 
   async sendEmail(accessToken: string, to: string, subject: string, body: string): Promise<void> {
